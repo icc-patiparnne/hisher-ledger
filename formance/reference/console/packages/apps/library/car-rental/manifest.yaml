@@ -1,0 +1,79 @@
+app:
+  name: car-rental
+  version: 1
+
+stack:
+  region: eu-sandbox
+  version: v3.0
+  modules:
+    ledger: true
+    payments: true
+    webhooks: false
+
+actors:
+  providers: 'platform supply side, puts their car inventory for rental'
+  renters: 'platform buy side, secures car rentals'
+  insurers: 'provide insurance service for rentals'
+
+ledgers:
+  main:
+    schema:
+      world:
+        _metadata:
+          type: asset
+      platform:
+        _metadata:
+          type: liability
+      bookings:
+        $id:
+    transactions:
+      - book-payment
+    queries:
+      total-bookings-pending:
+        type: accounts
+        $match:
+          address: 'bookings:'
+
+transactions:
+  book-payment: |
+    vars {
+      monetary $total
+      string $paymentID
+      string $bookingID
+    }
+    send $total (
+      source = @world
+      destination = @payments:$paymentID
+    )
+    send $total (
+      source = @payments:$paymentID
+      destination = @bookings:$bookingID
+    )
+
+network:
+  connectors:
+    payments-main:
+      provider: stripe
+      configuration:
+        api_key: ${STRIPE_API_KEY}
+
+treasury:
+  pools:
+    main:
+      accounts:
+        $match:
+          connector: payments-main
+          name: 'root'
+    insurance:
+      accounts:
+        $match:
+
+reconciliation:
+  policies:
+    main:
+      pool: main
+      ledger:
+        name: main
+        query:
+          $match:
+            metadata.type: asset

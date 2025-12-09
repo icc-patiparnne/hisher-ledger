@@ -1,0 +1,578 @@
+@import url('https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Space+Grotesk:wght@300..700&family=Space+Mono:wght@400;700&display=swap');
+
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@plugin '@tailwindcss/typography';
+
+@source "../../../apps/**/*.{ts,tsx}";
+@source "../../../components/**/*.{ts,tsx}";
+@source "../**/*.{ts,tsx}";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --font-primary: 'Figtree';
+  --font-secondary: 'Space Grotesk';
+  --font-mono: 'Space Mono';
+
+  --white: var(--emerald-50);
+  --black: var(--emerald-800);
+
+  --background: var(--white);
+  --foreground: var(--black);
+
+  --muted: var(--emerald-100);
+  --muted-lighter: 180, 14%, 97%;
+  --muted-foreground: var(--emerald-600);
+
+  --card: var(--background);
+  --card-foreground: var(--foreground);
+
+  --popover: var(--background);
+  --popover-foreground: var(--foreground);
+
+  --border: var(--emerald-200);
+  --input: var(--emerald-200);
+
+  --primary: var(--emerald-700);
+  --primary-foreground: var(--white);
+
+  --secondary: var(--emerald-100);
+  --secondary-foreground: var(--foreground);
+
+  --accent: var(--muted-lighter);
+  --accent-foreground: var(--foreground);
+
+  --ring: var(--emerald-500);
+  --radius: 0.5rem;
+
+  --emerald-50: 0, 0%, 100%;
+  --emerald-100: 180, 14%, 93%;
+  --emerald-200: 180, 16%, 89%;
+  --emerald-300: 180, 17%, 86%;
+  --emerald-400: 184, 13%, 75%;
+  --emerald-500: 184, 11%, 53%;
+  --emerald-600: 186, 22%, 33%;
+  --emerald-700: 187, 97%, 12%;
+  --emerald-800: 187, 96%, 9%;
+  --emerald-900: 185, 100%, 5%;
+
+  --lilac-100: 240, 82%, 98%;
+  --lilac-200: 243, 100%, 96%;
+  --lilac-300: 242, 100%, 94%;
+  --lilac-400: 243, 100%, 92%;
+  --lilac-500: 242, 100%, 90%;
+  --lilac-600: 243, 43%, 75%;
+  --lilac-700: 242, 29%, 59%;
+  --lilac-800: 243, 28%, 44%;
+  --lilac-900: 242, 45%, 29%;
+
+  --gold-100: 42, 18%, 86%;
+  --gold-200: 44, 17%, 74%;
+  --gold-300: 42, 17%, 63%;
+  --gold-400: 43, 17%, 51%;
+  --gold-500: 43, 26%, 39%;
+  --gold-600: 43, 26%, 31%;
+  --gold-700: 43, 27%, 24%;
+  --gold-800: 42, 25%, 16%;
+  --gold-900: 42, 25%, 8%;
+
+  --cobalt-100: 205, 46%, 90%;
+  --cobalt-200: 205, 48%, 90%;
+  --cobalt-300: 206, 47%, 69%;
+  --cobalt-400: 206, 48%, 59%;
+  --cobalt-500: 206, 50%, 45%;
+  --cobalt-600: 206, 50%, 39%;
+  --cobalt-700: 206, 49%, 29%;
+  --cobalt-800: 206, 50%, 20%;
+  --cobalt-900: 205, 48%, 10%;
+
+  --mint-100: 126, 56%, 96%;
+  --mint-200: 123, 56%, 93%;
+  --mint-300: 122, 52%, 89%;
+  --mint-400: 122, 53%, 86%;
+  --mint-500: 122, 53%, 82%;
+  --mint-600: 123, 27%, 68%;
+  --mint-700: 123, 16%, 53%;
+  --mint-800: 122, 18%, 39%;
+  --mint-900: 122, 25%, 24%;
+
+  --red-background: 2, 93%, 94%;
+  --red-foreground: 0, 75%, 42%;
+
+  --orange-background: 19, 100%, 94%;
+  --orange-foreground: 18, 89%, 40%;
+
+  --amber-background: 43, 95%, 92%;
+  --amber-foreground: 26, 89%, 37%;
+
+  --yellow-background: 45, 100%, 92%;
+  --yellow-foreground: 35, 92%, 33%;
+
+  --lime-background: 86, 76%, 92%;
+  --lime-foreground: 86, 78%, 27%;
+
+  --green-background: 135, 56%, 89%;
+  --green-foreground: 142, 70%, 26%;
+
+  --teal-background: 170, 47%, 90%;
+  --teal-foreground: 175, 79%, 26%;
+
+  --cyan-background: 189, 85%, 92%;
+  --cyan-foreground: 193, 83%, 31%;
+
+  --sky-background: 202, 82%, 94%;
+  --sky-foreground: 201, 94%, 32%;
+
+  --blue-background: 220, 93%, 94%;
+  --blue-foreground: 224, 77%, 48%;
+
+  --indigo-background: 240, 92%, 95%;
+  --indigo-foreground: 245, 58%, 51%;
+
+  --violet-background: 258, 92%, 95%;
+  --violet-foreground: 263, 70%, 50%;
+
+  --purple-background: 269, 100%, 95%;
+  --purple-foreground: 272, 72%, 47%;
+
+  --fuchsia-background: 294, 90%, 96%;
+  --fuchsia-foreground: 295, 72%, 40%;
+
+  --pink-background: 327, 91%, 96%;
+  --pink-foreground: 335, 77%, 42%;
+
+  --rose-background: 351, 100%, 96%;
+  --rose-foreground: 346, 82%, 41%;
+
+  --zinc-background: 240, 3%, 93%;
+  --zinc-foreground: 240, 5%, 26%;
+
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--emerald-400);
+  --sidebar-primary-foreground: var(--white);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
+  --sidebar-menu-sub-border: var(--sidebar-primary);
+
+  --chart-1: var(--emerald-600);
+  --chart-2: var(--lilac-600);
+  --chart-3: var(--gold-500);
+  --chart-4: var(--cobalt-500);
+  --chart-5: var(--mint-500);
+
+  --valid: var(--green-background);
+  --valid-foreground: var(--green-foreground);
+
+  --destructive: var(--red-background);
+  --destructive-foreground: var(--red-foreground);
+
+  --warning: var(--amber-background);
+  --warning-foreground: var(--amber-foreground);
+
+  --info: var(--sky-background);
+  --info-foreground: var(--sky-foreground);
+}
+
+.dark {
+  --black: var(--emerald-800);
+
+  --background: var(--emerald-900);
+  --foreground: var(--white);
+
+  --muted: 187, 96%, 5%;
+  --muted-lighter: 187, 96%, 7%;
+  --muted-foreground: var(--emerald-300);
+
+  --popover: var(--background);
+  --popover-foreground: var(--foreground);
+
+  --card: var(--background);
+  --card-foreground: var(--foreground);
+
+  --border: var(--emerald-700);
+  --input: var(--emerald-700);
+
+  --primary: var(--emerald-700);
+  --primary-foreground: var(--white);
+
+  --secondary: var(--emerald-300);
+  --secondary-foreground: var(--emerald-900);
+
+  --accent: var(--emerald-700);
+  --accent-foreground: var(--emerald-100);
+
+  --ring: var(--emerald-500);
+
+  --red-background: 0, 84%, 15%;
+  --red-foreground: 0, 91%, 74%;
+
+  --orange-background: 18, 26%, 15%;
+  --orange-foreground: 27, 96%, 61%;
+
+  --amber-background: 39, 22%, 15%;
+  --amber-foreground: 43, 96%, 56%;
+
+  --yellow-background: 44, 25%, 15%;
+  --yellow-foreground: 50, 98%, 54%;
+
+  --lime-background: 88, 17%, 15%;
+  --lime-foreground: 82, 85%, 71%;
+
+  --green-background: 143, 18%, 14%;
+  --green-foreground: 142, 69%, 58%;
+
+  --teal-background: 185, 17%, 14%;
+  --teal-foreground: 171, 77%, 64%;
+
+  --cyan-background: 186, 96%, 8%;
+  --cyan-foreground: 186, 96%, 69%;
+
+  --sky-background: 207, 26%, 15%;
+  --sky-foreground: 199, 95%, 74%;
+
+  --blue-background: 222, 33%, 18%;
+  --blue-foreground: 213, 94%, 68%;
+
+  --indigo-background: 240, 26%, 19%;
+  --indigo-foreground: 234, 89%, 74%;
+
+  --violet-background: 256, 26%, 18%;
+  --violet-foreground: 256, 92%, 76%;
+
+  --purple-background: 266, 30%, 18%;
+  --purple-foreground: 270, 95%, 75%;
+
+  --fuchsia-background: 284, 18%, 17%;
+  --fuchsia-foreground: 293, 91%, 73%;
+
+  --pink-background: 317, 18%, 16%;
+  --pink-foreground: 329, 86%, 70%;
+
+  --rose-background: 340, 19%, 16%;
+  --rose-foreground: 351, 95%, 71%;
+
+  --zinc-background: 240, 4%, 15%;
+  --zinc-foreground: 240, 5%, 82%;
+
+  --sidebar: var(--background);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--emerald-500);
+  --sidebar-primary-foreground: var(--white);
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-border-items: var(--border);
+  --sidebar-ring: var(--ring);
+
+  --chart-1: 220 70% 50%;
+  --chart-2: 160 60% 45%;
+  --chart-3: 30 80% 55%;
+  --chart-4: 280 65% 60%;
+  --chart-5: 340 75% 55%;
+
+  --valid: var(--green-background);
+  --valid-foreground: var(--green-foreground);
+
+  --destructive: var(--red-background);
+  --destructive-foreground: var(--red-foreground);
+
+  --warning: var(--amber-background);
+  --warning-foreground: var(--amber-foreground);
+
+  --info: var(--sky-background);
+  --info-foreground: var(--sky-foreground);
+}
+
+@theme inline {
+  --font-family-primary: var(--font-primary), ui-sans-serif, system-ui,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  --font-family-secondary: var(--font-secondary), ui-sans-serif, system-ui,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  --font-family-mono: var(--font-mono), ui-monospace, SFMono-Regular, 'SF Mono',
+    Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-lighter: hsl(var(--muted-lighter));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+
+  --color-valid: hsl(var(--valid));
+  --color-valid-foreground: hsl(var(--valid-foreground));
+  --color-success: hsl(var(--valid));
+  --color-success-foreground: hsl(var(--valid-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-info: hsl(var(--info));
+  --color-info-foreground: hsl(var(--info-foreground));
+
+  --color-emerald-50: hsl(var(--emerald-50));
+  --color-emerald-100: hsl(var(--emerald-100));
+  --color-emerald-200: hsl(var(--emerald-200));
+  --color-emerald-300: hsl(var(--emerald-300));
+  --color-emerald-400: hsl(var(--emerald-400));
+  --color-emerald-500: hsl(var(--emerald-500));
+  --color-emerald-600: hsl(var(--emerald-600));
+  --color-emerald-700: hsl(var(--emerald-700));
+  --color-emerald-800: hsl(var(--emerald-800));
+  --color-emerald-900: hsl(var(--emerald-900));
+
+  --color-lilac-100: hsl(var(--lilac-100));
+  --color-lilac-200: hsl(var(--lilac-200));
+  --color-lilac-300: hsl(var(--lilac-300));
+  --color-lilac-400: hsl(var(--lilac-400));
+  --color-lilac-500: hsl(var(--lilac-500));
+  --color-lilac-600: hsl(var(--lilac-600));
+  --color-lilac-700: hsl(var(--lilac-700));
+  --color-lilac-800: hsl(var(--lilac-800));
+  --color-lilac-900: hsl(var(--lilac-900));
+
+  --color-gold-100: hsl(var(--gold-100));
+  --color-gold-200: hsl(var(--gold-200));
+  --color-gold-300: hsl(var(--gold-300));
+  --color-gold-400: hsl(var(--gold-400));
+  --color-gold-500: hsl(var(--gold-500));
+  --color-gold-600: hsl(var(--gold-600));
+  --color-gold-700: hsl(var(--gold-700));
+  --color-gold-800: hsl(var(--gold-800));
+  --color-gold-900: hsl(var(--gold-900));
+
+  --color-cobalt-100: hsl(var(--cobalt-100));
+  --color-cobalt-200: hsl(var(--cobalt-200));
+  --color-cobalt-300: hsl(var(--cobalt-300));
+  --color-cobalt-400: hsl(var(--cobalt-400));
+  --color-cobalt-500: hsl(var(--cobalt-500));
+  --color-cobalt-600: hsl(var(--cobalt-600));
+  --color-cobalt-700: hsl(var(--cobalt-700));
+  --color-cobalt-800: hsl(var(--cobalt-800));
+  --color-cobalt-900: hsl(var(--cobalt-900));
+
+  --color-mint-100: hsl(var(--mint-100));
+  --color-mint-200: hsl(var(--mint-200));
+  --color-mint-300: hsl(var(--mint-300));
+  --color-mint-400: hsl(var(--mint-400));
+  --color-mint-500: hsl(var(--mint-500));
+  --color-mint-600: hsl(var(--mint-600));
+  --color-mint-700: hsl(var(--mint-700));
+  --color-mint-800: hsl(var(--mint-800));
+  --color-mint-900: hsl(var(--mint-900));
+
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-primary: hsl(var(--sidebar-primary));
+  --color-sidebar-primary-foreground: hsl(var(--sidebar-primary-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-sidebar-ring: hsl(var(--sidebar-ring));
+  --color-sidebar-menu-sub-border: hsl(var(--sidebar-menu-sub-border));
+
+  --color-red-background: hsl(var(--red-background));
+  --color-red-foreground: hsl(var(--red-foreground));
+  --color-orange-background: hsl(var(--orange-background));
+  --color-orange-foreground: hsl(var(--orange-foreground));
+  --color-amber-background: hsl(var(--amber-background));
+  --color-amber-foreground: hsl(var(--amber-foreground));
+  --color-yellow-background: hsl(var(--yellow-background));
+  --color-yellow-foreground: hsl(var(--yellow-foreground));
+  --color-lime-background: hsl(var(--lime-background));
+  --color-lime-foreground: hsl(var(--lime-foreground));
+  --color-green-background: hsl(var(--green-background));
+  --color-green-foreground: hsl(var(--green-foreground));
+  --color-teal-background: hsl(var(--teal-background));
+  --color-teal-foreground: hsl(var(--teal-foreground));
+  --color-cyan-background: hsl(var(--cyan-background));
+  --color-cyan-foreground: hsl(var(--cyan-foreground));
+  --color-sky-background: hsl(var(--sky-background));
+  --color-sky-foreground: hsl(var(--sky-foreground));
+  --color-blue-background: hsl(var(--blue-background));
+  --color-blue-foreground: hsl(var(--blue-foreground));
+  --color-indigo-background: hsl(var(--indigo-background));
+  --color-indigo-foreground: hsl(var(--indigo-foreground));
+  --color-violet-background: hsl(var(--violet-background));
+  --color-violet-foreground: hsl(var(--violet-foreground));
+  --color-purple-background: hsl(var(--purple-background));
+  --color-purple-foreground: hsl(var(--purple-foreground));
+  --color-fuchsia-background: hsl(var(--fuchsia-background));
+  --color-fuchsia-foreground: hsl(var(--fuchsia-foreground));
+  --color-pink-background: hsl(var(--pink-background));
+  --color-pink-foreground: hsl(var(--pink-foreground));
+  --color-rose-background: hsl(var(--rose-background));
+  --color-rose-foreground: hsl(var(--rose-foreground));
+  --color-zinc-background: hsl(var(--zinc-background));
+  --color-zinc-foreground: hsl(var(--zinc-foreground));
+
+  --color-chart-1: hsl(var(--chart-1));
+  --color-chart-2: hsl(var(--chart-2));
+  --color-chart-3: hsl(var(--chart-3));
+  --color-chart-4: hsl(var(--chart-4));
+  --color-chart-5: hsl(var(--chart-5));
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --blur-xs: 2px;
+
+  --max-width-screen-xs: 540px;
+
+  --z-index-1: 1;
+  --z-index-2: 2;
+  --z-index-3: 3;
+  --z-index-4: 4;
+  --z-index-5: 5;
+  --z-index-6: 6;
+  --z-index-7: 7;
+  --z-index-8: 8;
+  --z-index-9: 9;
+
+  --spacing-10pc: 10%;
+  --spacing-20pc: 20%;
+  --spacing-30pc: 30%;
+  --spacing-40pc: 40%;
+  --spacing-50pc: 50%;
+  --spacing-60pc: 60%;
+  --spacing-70pc: 70%;
+  --spacing-80pc: 80%;
+  --spacing-90pc: 90%;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-collapsible-down: collapsible-down 0.2s ease-out;
+  --animate-collapsible-up: collapsible-up 0.2s ease-out;
+}
+
+@utility container {
+  padding-inline: 1rem;
+  margin: 0 auto;
+
+  @variant sm {
+  }
+
+  @variant md {
+  }
+}
+
+.prose {
+  @apply text-muted-foreground;
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply text-foreground font-semibold;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+
+  h3 {
+    @apply text-lg;
+  }
+
+  strong {
+    @apply text-foreground;
+  }
+
+  a {
+    @apply text-foreground underline-offset-4 hover:underline;
+  }
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@keyframes collapsible-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes collapsible-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+/* Set default border color without overriding utility classes */
+*:not([class*='border-']) {
+  border-color: hsl(var(--border));
+}
+
+* {
+  outline-color: hsl(var(--ring) / 0.5);
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-family: var(--font-family-primary);
+  color: hsl(var(--foreground));
+}
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

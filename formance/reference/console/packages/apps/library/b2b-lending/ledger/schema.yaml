@@ -1,0 +1,60 @@
+version: "1.0"
+date: "2025-09-30"
+
+chart:
+  world:
+    metadata:
+      spec/type: "asset"
+  users:
+    $user_id:
+      repayments:
+        metadata:
+          spec/type: "asset"
+  loans:
+    $id:
+      main:
+        metadata:
+          spec/type: "asset"
+      pending:
+        metadata:
+          spec/type: "liability"
+      disbursement:
+        metadata:
+          spec/type: "liability"
+
+transactions:
+  create_loan: @create-loan.num
+  prepare_disbursement: @prepare-loan-disbursement.num
+  confirm_disbursement: @confirm-loan-disbursement.num
+  apply_repayment: @apply-user-repayment.num
+
+queries:
+  total_outstanding_loans:
+    description: "Total outstanding loan amount"
+    mode: sync
+    operationId: v2GetBalancesAggregated
+    body:
+      $match:
+        account: "loans::main"
+  total_user_outstanding:
+    description: "Total outstanding loaned amount for a user"
+    mode: sync
+    operationId: v2GetBalancesAggregated
+    params:
+      user_id: string
+    body:
+      $and:
+        - $match:
+            account: "loans::main"
+        - $match:
+            metadata[user_id]: $user_id
+  total_user_available_credit:
+    description: "Total credit for a user available for repayments"
+    mode: sync
+    operationId: v2GetBalancesAggregated
+    params:
+      user_id: string
+    body:
+      $and:
+        - $match:
+            account: "users:$user_id:repayments"

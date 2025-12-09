@@ -1,0 +1,53 @@
+global:
+  platform:
+    consoleV3:
+      host: console-v3.{{ .Values.global.serviceHost }}
+    membership:
+      host: "{{ .Values.global.serviceHost }}"
+  monitoring:
+    batch: true
+    traces:
+      enabled: true
+      endpoint: otel-collector-opentelemetry-collector.formance.svc.cluster.local
+      port: 4317
+
+ingress:
+  enabled: true
+
+image:
+  repository: ghcr.io/formancehq/console-v3
+  pullPolicy: Always
+
+replicas: 1
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 500m
+    memory: 256Mi
+
+readinessProbe:
+  initialDelaySeconds: 20
+
+livenessProbe:
+  initialDelaySeconds: 20
+config:
+  cookie:
+    encryptionKey: "console-v3-secrets"
+  # Deprecated
+  stargate_url: "http://stargate.formance.svc:8080/#{organizationId}/#{stackId}/api"
+  sentry:
+    enabled: true
+    dsn: "https://0471897450fb76153c974917633a1f1c@o4504394442539008.ingest.us.sentry.io/4508256501301248"
+    environment: "development"
+    release: "v1.12.3"
+    authToken:
+      existingSecret: portal-secrets
+      secretKeys:
+        value: sentry.auth.token
+
+  additionalEnv:
+  - name: "MICRO_STACK"
+    value: "0"

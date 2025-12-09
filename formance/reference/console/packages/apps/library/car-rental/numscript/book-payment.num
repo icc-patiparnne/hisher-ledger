@@ -1,0 +1,15 @@
+vars {
+  monetary $total
+  string $paymentID
+  string $bookingID
+}
+
+send $total (
+  source = @world
+  destination = @payments:$paymentID
+)
+
+send $total (
+  source = @payments:$paymentID
+  destination = @bookings:$bookingID
+)

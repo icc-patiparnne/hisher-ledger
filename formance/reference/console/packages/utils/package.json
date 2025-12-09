@@ -1,0 +1,11 @@
+{
+  "name": "@platform/utils",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "decimal.js": "^10.5.0"
+  }
+}

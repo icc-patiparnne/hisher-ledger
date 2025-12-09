@@ -1,0 +1,13 @@
+vars {
+  string $loan_id
+  string $payout_reference
+  account $loan = @loans:$loan_id:main
+  asset $currency = meta($loan, "currency")
+}
+
+send [$currency *] (
+  source = @loans:$loan_id:disbursement
+  destination = @world
+)
+
+set_tx_meta("payout_reference", $payout_reference)

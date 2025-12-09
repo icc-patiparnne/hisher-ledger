@@ -1,0 +1,68 @@
+# manifest.yaml
+app:
+  name: lending-app
+  version: "1.0.0"
+
+ledgers:
+  - name: lending-ledger
+	  schema:
+	    - name: loans
+	      metadata:
+		      type: asset
+	    - name: payments
+	      metadata:
+		      type: liability
+
+payments:
+  connectors:
+    - name: loans-debits-main
+	    provider: gocardless
+      configuration:
+        api_key: ${GO_CARDLESS_API_KEY}  # variable injected at deploy
+    - name: loans-treasury
+	    provider: modulr
+      config:
+        api_key: ${MODULR_API_KEY}
+  pools:
+	  treasury-main:
+			 accounts:
+				 $match:
+					 name: root
+					 connector:
+						 name: loans-treasury
+
+reconciliation:
+  policies:
+    - name: ledger-bank-match
+      ledger:
+	      ledger: lending-ledger
+	      accounts:
+      pool: treasury-main
+      # maybe we should have a way to expose this as a variable
+      # configureable
+      allowed-drift:
+	      USD/2: 10000
+
+events:
+  - on: payment.received
+    sequence:
+      - # ...
+
+numscript:
+  - name: disburse-loan
+    file: transactions/disbursement.ns
+
+worklflows:
+  onboard-loan:
+  disburse-loan:
+	  vars:
+		  loan-id:
+			  name: "Loan Number"
+	  data:
+		  # we'll want to show this to the operator
+		  loan-amount:
+			  ledger.query:
+		sequence:
+			- ledger.transaction:
+					template: ...
+					bind-vars: true

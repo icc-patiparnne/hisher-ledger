@@ -1,0 +1,7 @@
+{
+  "extends": "../ts-config/remix.json",
+  "include": ["src/components/**/*.ts", "src/components/**/*.tsx"],
+  "compilerOptions": {
+    "types": ["@react-router/node", "node"]
+  }
+}

@@ -1,0 +1,4 @@
+send [USD/2 100] (
+  source = @foo
+  destination = @bar
+)

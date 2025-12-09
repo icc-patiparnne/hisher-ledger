@@ -1,0 +1,31 @@
+app:
+  name: "b2b-lending-facility"
+
+ledgers:
+  loanbook:
+    schema: @schema.yaml
+
+payments:
+  connectors:
+    main:
+      provider: modulr
+      configuration:
+        apiKey: ${MODULR_API_KEY}
+        apiSecret: ${MODULR_API_SECRET}
+        endpoint: ${MODULR_API_ENDPOINT}
+  pools:
+    main:
+      accounts:
+        "$match":
+        connector: ${connectors.main}
+        name: "root"
+
+reconciliation:
+  policies:
+    default:
+      pool: ${payments.pools.main}
+      ledger:
+        name: loanbook
+        query:
+          $match:
+            account: world

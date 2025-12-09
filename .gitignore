@@ -1,0 +1,36 @@
+# Environment variables
+.env
+docker-compose.override.yml
+
+# Backups
+backups/
+*.sql
+*.backup
+
+# Data directories
+data/
+postgres/
+auth-postgres/
+
+# Custom configurations
+*.local.yml
+*-local.yml
+
+# Logs
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+._*
+
+# Node modules (for proxy)
+node_modules/
+npm-debug.log*

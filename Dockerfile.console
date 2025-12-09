@@ -1,0 +1,28 @@
+# Multi-stage build for Formance Console v3
+# Builds console with the typo fix for "leader:write" -> "ledger:write"
+
+FROM node:22-alpine AS base
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+RUN corepack enable
+WORKDIR /app
+
+# Copy source for building
+FROM base AS builder
+COPY . .
+
+# Production stage - use official console as base since pnpm workspace is complex
+FROM ghcr.io/formancehq/console-v3:f76467637c7c594a35a39690b5e26f69936b2dcf AS official
+
+# Final stage - replace build with our fixed version
+FROM official
+
+# Copy our fixed build over the official one
+# Official image has WORKDIR /app/apps/console-v3/ with build folder there
+COPY --from=builder /app/apps/console-v3/build /app/apps/console-v3/build
+
+# The official image already has:
+# - All dependencies properly installed  
+# - WORKDIR /app/apps/console-v3/
+# - CMD ["sh", "-c", "pnpm run start:prod"]
+# We just replace the build folder with our typo-fixed version

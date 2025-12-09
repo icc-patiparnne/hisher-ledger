@@ -1,0 +1,64 @@
+VERSION 0.8
+
+ARG core=github.com/formancehq/earthly:main
+IMPORT $core AS core
+
+IMPORT ../.. AS root
+
+FROM core+base-image
+
+
+# deploy-dev Deploy console-v3 on dev environment
+# The chart used is portal, but the app is console-v3.
+# Care to the values.yaml used https://github.com/formancehq/helm/blob/main/charts/portal/
+deploy-dev:
+    ARG PROJECT=console-v3
+    FROM --pass-args root+pruner
+    ARG VERSION=$(tar cf - /app | sha1sum | awk '{print $1}')
+    WAIT
+        BUILD --pass-args root+registry --INSECURE=1
+    END    
+    FROM --pass-args core+vcluster-deployer-image
+    ARG CONSOLE_V3_HELM_VERSION=main
+    ARG --required user
+
+    WORKDIR /src
+    COPY (github.com/formancehq/helm/charts/console-v3:$CONSOLE_V3_HELM_VERSION+package/*) charts/archive.tgz
+    COPY .earthly/values.yaml ./
+
+    LET ADDITIONAL_ARGS=""
+    ARG FORMANCE_DEV_CLUSTER_V2=no
+    IF [ "$FORMANCE_DEV_CLUSTER_V2" == "yes" ]
+        SET ADDITIONAL_ARGS="$ADDITIONAL_ARGS --set imagePullSecrets[0].name=zot"
+        SET ADDITIONAL_ARGS="$ADDITIONAL_ARGS --set global.monitoring.traces.endpoint=opentelemetry-collector.monitoring.svc.cluster.local"
+        SET ADDITIONAL_ARGS="$ADDITIONAL_ARGS --set global.monitoring.metrics.endpoint=opentelemetry-collector.monitoring.svc.cluster.local"
+        SET ADDITIONAL_ARGS="$ADDITIONAL_ARGS --set ingress.annotations.\"cert-manager\\.io/cluster-issuer\"=zerossl"
+
+        ARG --required REPOSITORY
+        SET ADDITIONAL_ARGS="$ADDITIONAL_ARGS --set image.repository=$REPOSITORY/formancehq/console-v3"
+    END
+
+    RUN --secret tld echo helm upgrade --namespace formance \
+        --create-namespace \
+        --install console-v3 ./charts/archive.tgz \
+        --values values.yaml \
+        --set global.serviceHost=$user.$tld \
+        --set ingress.tls[0].secretName=console-certificate \
+        --set ingress.tls[0].hosts[0]=console-v3.$user.$tld \
+        --set image.tag=$VERSION \
+        --set global.monitoring.attributes=deployment.environment=$user.$tld $ADDITIONAL_ARGS | /bin/sh
+        # # To add any dynamic env vars https://github.com/formancehq/helm/blob/f0dd7f7caf98d387a636e4dde45749bf98ab8011/charts/portal/values.yaml#L147
+        # # Add it empty on the values.yaml file first
+        # # Then add it here
+        # --set config.additionalEnvVars[0].name=MY_ENV_VAR
+        # --set config.additionalEnvVars[0].value=MY_ENV_VAR_VALUE
+
+# deploy-staging Deploy console-v3 on staging environment
+deploy-staging:
+    FROM core+base-argocd
+    ARG PROJECT=console-v3 
+    ARG --required VERSION
+    LET APPLICATION=staging-eu-west-1-hosting-cloudprem
+    LET SERVER=argocd.internal.formance.cloud
+    RUN --secret AUTH_TOKEN argocd --auth-token=$AUTH_TOKEN --server=$SERVER --grpc-web app set $APPLICATION --parameter console-v3.image.tag=$VERSION --source-position 2
+    RUN --secret AUTH_TOKEN argocd --auth-token=$AUTH_TOKEN --server=$SERVER --grpc-web app sync $APPLICATION

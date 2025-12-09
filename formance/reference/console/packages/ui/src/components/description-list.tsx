@@ -1,0 +1,43 @@
+import { cn } from '../lib/utils';
+
+export function DescriptionList({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'dl'>) {
+  return (
+    <dl
+      {...props}
+      className={cn('grid grid-cols-1 sm:grid-cols-3', className)}
+    />
+  );
+}
+
+export function DescriptionTerm({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'dt'>) {
+  return (
+    <dt
+      {...props}
+      className={cn(
+        'col-start-1 text-sm border-t border-border pt-4 text-muted-foreground first:border-none sm:border-t sm:py-3',
+        className
+      )}
+    />
+  );
+}
+
+export function DescriptionDetails({
+  className,
+  ...props
+}: React.ComponentPropsWithoutRef<'dd'>) {
+  return (
+    <dd
+      {...props}
+      className={cn(
+        'col-span-2 pb-3 pt-1 text-sm sm:border-t sm:border-border sm:py-4 sm:[&:nth-child(2)]:border-none',
+        className
+      )}
+    />
+  );
+}

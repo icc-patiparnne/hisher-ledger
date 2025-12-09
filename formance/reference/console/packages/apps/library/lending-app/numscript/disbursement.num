@@ -1,0 +1,24 @@
+vars {
+  monetary $loan_amount
+  string $borrower_id
+  string $loan_id
+  string $disbursement_account
+}
+
+// Transfer loan amount from lending pool to disbursement account
+send $loan_amount (
+  source = @lending_pool
+  destination = @disbursement:$disbursement_account
+)
+
+// Disburse funds to borrower's account
+send $loan_amount (
+  source = @disbursement:$disbursement_account
+  destination = @borrowers:$borrower_id
+)
+
+// Record loan disbursement for tracking
+send $loan_amount (
+  source = @borrowers:$borrower_id
+  destination = @loans:$loan_id
+)

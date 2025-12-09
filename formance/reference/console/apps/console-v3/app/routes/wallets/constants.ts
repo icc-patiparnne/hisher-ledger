@@ -1,0 +1,15 @@
+export const WALLETS_LIST = 'wallets-list';
+export const WALLETS_LIST_FAVORITES = `${WALLETS_LIST}_favorites`;
+
+export const WALLETS_BALANCES_LIST = 'wallets-balances-list';
+
+export const WALLETS_HOLDS_LIST = 'wallets-holds-list';
+
+export const WALLETS_TRANSACTIONS_LIST = 'wallets-transactions-list';
+
+// ACTIONS
+export const WALLETS_ACTION_CREATE_WALLET = 'WALLETS-ACTIONS-CREATE-WALLET';
+export const WALLETS_ACTION_CREDIT_WALLET = 'WALLETS-ACTIONS-CREDIT-WALLET';
+export const WALLETS_ACTION_DEBIT_WALLET = 'WALLETS-ACTIONS-DEBIT-WALLET';
+export const WALLETS_ACTION_CONFIRM_HOLD = 'WALLETS-ACTIONS-CONFIRM-HOLD';
+export const WALLETS_ACTION_VOID_HOLD = 'WALLETS-ACTIONS-VOID-HOLD';

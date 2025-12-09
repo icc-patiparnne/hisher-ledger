@@ -1,0 +1,6 @@
+info:
+  name: my-stack
+  version: 'v3.0'
+
+ledgers:
+  - name: my-test-ledger

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    "**/.env"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "API_STACK_URL",
+    "MEMBERSHIP_CLIENT_ID",
+    "MEMBERSHIP_CLIENT_SECRET",
+    "VERSION",
+    "MEMBERSHIP_URL_API",
+    "CONSOLE_COOKIE_SECRET",
+    "APPS_CONSOLE",
+    "APPS_CONSOLE_V3",
+    "COOKIE_SECRET",
+    "REDIRECT_URI",
+    "COOKIE_DOMAIN",
+    "DEBUG",
+    "PLAYWRIGHT_ADMIN_PASSWORD",
+    "PLAYWRIGHT_ADMIN_EMAIL",
+    "PLAYWRIGHT_NONE_PASSWORD",
+    "PLAYWRIGHT_NONE_EMAIL",
+    "PLAYWRIGHT_GUEST_PASSWORD",
+    "PLAYWRIGHT_GUEST_EMAIL",
+    "PLAYWRIGHT_USER_ROLE",
+    "OTEL",
+    "OTEL_TRACES_EXPORTER",
+    "OTEL_TRACES_EXPORTER_OTLP_ENDPOINT",
+    "OTEL_TRACES_EXPORTER",
+    "MICRO_STACK",
+    "API_URL",
+    "PORTAL_UI",
+    "FEATURES_DISABLED",
+    "SERVICES_VERSION",
+    "CONSOLE_COOKIE_DOMAIN",
+    "PYLON_IDENTITY_SECRET",
+    "SENTRY_DSN"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env.development.local",
+        ".env.local",
+        ".env.development",
+        ".env"
+      ],
+      "outputs": [
+        ".build/**"
+      ]
+    },
+    "dev": {
+      "cache": false,
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        ".env.development.local",
+        ".env.local",
+        ".env.development",
+        ".env"
+      ],
+      "persistent": true
+    },
+    "format": {},
+    "format:fix": {},
+    "lint": {},
+    "lint:fix": {},
+    "test": {},
+    "typecheck": {}
+  }
+}

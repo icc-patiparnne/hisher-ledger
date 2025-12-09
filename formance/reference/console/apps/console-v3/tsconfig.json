@@ -1,0 +1,10 @@
+{
+  "extends": "@platform/ts-config/remix.json",
+  "exclude": [".react-router/types/**/*"],
+  "include": ["app", "tests", "../../packages/remix/src/utils/helper.ts"],
+  "compilerOptions": {
+    "jsx": "react",
+    "types": ["@react-router/node", "vite/client"],
+    "rootDirs": [".", "./.react-router/types"]
+  }
+}

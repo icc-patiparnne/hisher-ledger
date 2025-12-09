@@ -1,0 +1,15 @@
+vars {
+  string $loan_id
+  string $user_id
+  account $loan = @loans:$loan_id:main
+  monetary $amount
+  asset $currency = get_asset($amount)
+}
+
+send $amount (
+  source = $loan
+  destination = @loans:$loan_id:pending
+)
+
+set_account_meta($loan, "user_id", $user_id)
+set_account_meta($loan, "currency", $currency)

@@ -1,0 +1,332 @@
+{
+	"info": {
+		"name": "Formance Ledger with Auth",
+		"description": "Formance Ledger API with OAuth2 authentication. The token is automatically saved and reused.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Get Access Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Parse the response",
+									"const response = pm.response.json();",
+									"",
+									"// Check if we got a token",
+									"if (response.access_token) {",
+									"    // Save the token to a collection variable",
+									"    pm.collectionVariables.set('access_token', response.access_token);",
+									"    ",
+									"    // Calculate expiration time",
+									"    const expiresIn = response.expires_in || 3600;",
+									"    const expiresAt = Date.now() + (expiresIn * 1000);",
+									"    pm.collectionVariables.set('token_expires_at', expiresAt);",
+									"    ",
+									"    console.log('✅ Token saved successfully');",
+									"    console.log('Token expires in: ' + expiresIn + ' seconds');",
+									"    ",
+									"    // Set test result",
+									"    pm.test('Token obtained successfully', function () {",
+									"        pm.expect(response.access_token).to.be.a('string');",
+									"    });",
+									"} else {",
+									"    console.log('❌ Failed to get token');",
+									"    pm.test('Token should be present', function () {",
+									"        pm.expect(response.access_token).to.exist;",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Check if token is still valid",
+									"const tokenExpiresAt = pm.collectionVariables.get('token_expires_at');",
+									"const now = Date.now();",
+									"",
+									"if (tokenExpiresAt && now < tokenExpiresAt) {",
+									"    const remainingTime = Math.floor((tokenExpiresAt - now) / 1000);",
+									"    console.log('ℹ️ Current token is still valid for ' + remainingTime + ' seconds');",
+									"} else {",
+									"    console.log('ℹ️ Token expired or not found, requesting new token...');",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								},
+								{
+									"key": "client_id",
+									"value": "{{client_id}}",
+									"type": "text"
+								},
+								{
+									"key": "client_secret",
+									"value": "{{client_secret}}",
+									"type": "text"
+								},
+								{
+									"key": "scope",
+									"value": "ledger:read ledger:write",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/api/auth/oauth/token",
+							"host": ["{{base_url}}"],
+							"path": ["api", "auth", "oauth", "token"]
+						},
+						"description": "Get OAuth2 access token using client credentials flow. The token is automatically saved to `access_token` variable."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Ledger API",
+			"item": [
+				{
+					"name": "Get Server Info",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// Auto-refresh token if expired",
+									"const tokenExpiresAt = pm.collectionVariables.get('token_expires_at');",
+									"const now = Date.now();",
+									"",
+									"if (!tokenExpiresAt || now >= tokenExpiresAt) {",
+									"    console.log('🔄 Token expired, requesting new token...');",
+									"    ",
+									"    // Make a request to get a new token",
+									"    const tokenRequest = {",
+									"        url: pm.collectionVariables.get('base_url') + '/api/auth/oauth/token',",
+									"        method: 'POST',",
+									"        header: {",
+									"            'Content-Type': 'application/x-www-form-urlencoded'",
+									"        },",
+									"        body: {",
+									"            mode: 'urlencoded',",
+									"            urlencoded: [",
+									"                { key: 'grant_type', value: 'client_credentials' },",
+									"                { key: 'client_id', value: pm.collectionVariables.get('client_id') },",
+									"                { key: 'client_secret', value: pm.collectionVariables.get('client_secret') },",
+									"                { key: 'scope', value: 'ledger:read ledger:write' }",
+									"            ]",
+									"        }",
+									"    };",
+									"    ",
+									"    pm.sendRequest(tokenRequest, function (err, response) {",
+									"        if (err) {",
+									"            console.error('❌ Failed to refresh token:', err);",
+									"        } else {",
+									"            const jsonResponse = response.json();",
+									"            if (jsonResponse.access_token) {",
+									"                pm.collectionVariables.set('access_token', jsonResponse.access_token);",
+									"                const expiresIn = jsonResponse.expires_in || 3600;",
+									"                pm.collectionVariables.set('token_expires_at', Date.now() + (expiresIn * 1000));",
+									"                console.log('✅ Token refreshed successfully');",
+									"            }",
+									"        }",
+									"    });",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/_info",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "_info"]
+						},
+						"description": "Get ledger server information. Automatically uses the saved access token."
+					},
+					"response": []
+				},
+				{
+					"name": "List Ledgers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2"]
+						},
+						"description": "List all ledgers"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Ledger",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"bucket\": \"default\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}"]
+						},
+						"description": "Create a new ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/accounts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "accounts"]
+						},
+						"description": "Get all accounts in a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"postings\": [\n    {\n      \"source\": \"world\",\n      \"destination\": \"users:001\",\n      \"amount\": 100,\n      \"asset\": \"USD/2\"\n    }\n  ],\n  \"metadata\": {\n    \"description\": \"Initial deposit\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/transactions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "transactions"]
+						},
+						"description": "Create a new transaction"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transactions",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/transactions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "transactions"]
+						},
+						"description": "Get all transactions"
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global pre-request script runs before every request",
+					"// You can add global token refresh logic here if needed"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test script runs after every request",
+					"// You can add global assertions here if needed"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost",
+			"type": "string"
+		},
+		{
+			"key": "client_id",
+			"value": "production-admin",
+			"type": "string"
+		},
+		{
+			"key": "client_secret",
+			"value": "Ukbxu5XldEyAzvswzQ4tUgtUTGUBM8gTDHQzczzIuLk=",
+			"type": "string"
+		},
+		{
+			"key": "access_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "token_expires_at",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ledger_name",
+			"value": "default",
+			"type": "string"
+		}
+	]
+}

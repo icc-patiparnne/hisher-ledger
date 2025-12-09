@@ -1,0 +1,13 @@
+info:
+  name: my-connectivity-stack
+  version: 'v3.0'
+
+ledgers:
+  - name: my-test-ledger
+
+payments:
+  - connectors:
+      - name: loans-debits-main
+        provider: moneycorp
+        configuration:
+          api_key: ${MONEYCORP_API_KEY}

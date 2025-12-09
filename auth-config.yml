@@ -1,0 +1,197 @@
+# auth:
+#   issuer: /api/auth
+#   audience: ledger
+
+clients:
+  - id: ledger
+    public: false
+    description: "Ledger internal client"
+    trusted: true
+    scopes:
+      - ledger:read
+      - ledger:write
+      - worker:read
+      - worker:write
+    secrets:
+      - f61bdd8c-832e-4a69-a2a8-20290207d671
+
+  - id: test-client
+    public: false
+    redirectUris: []
+    description: "Test Client"
+    trusted: true
+    scopes:
+      - ledger:read
+      - ledger:write
+      - worker:read
+      - worker:write
+      - auth:read
+      - auth:write
+      - accounts:read
+      - accounts:write
+      - transaction:read
+      - transaction:write
+    secrets:
+      - secret123
+
+  - id: test-client-6
+    public: false
+    redirectUris: []
+    description: "Test Client 6"
+    trusted: true
+    scopes:
+      - ledger:read
+      - ledger:write
+      - worker:read
+      - worker:write
+      - auth:read
+      - auth:write
+      - account:read
+      - account:write
+      - transaction:read
+      - transaction:write
+    secrets:
+      - secret123
+
+  - id: test-client-x
+    public: false
+    redirectUris: []
+    description: "Test Client X"
+    trusted: true
+    scopes:
+      - ledger:read
+      - ledger:write
+      # - worker:read
+      # - worker:write
+    secrets:
+      - secret123
+
+  - id: 60042ecb-62c2-4c84-b50c-fc42bdcabeda
+    public: false
+    redirectUris: []
+    description: "Production Admin Client (Legacy)"
+    trusted: true
+    scopes:
+      - auth:read
+      - auth:write
+      - ledger:read
+      - ledger:write
+      - worker:read
+      - worker:write
+      - accounts:read
+      - accounts:write
+      - transaction:read
+      - transaction:write
+      - transactions:read
+      - transactions:write
+      - payments:read
+      - payments:write
+      - wallets:read
+      - wallets:write
+      - reconciliation:read
+      - reconciliation:write
+      - orchestration:read
+      - orchestration:write
+      - search:read
+      - search:write
+      - webhooks:read
+      - webhooks:write
+      - openid
+      - email
+    secrets:
+      - f61bdd8c-832e-4a69-a2a8-20290207d67e
+
+  - id: production-admin
+    public: false
+    redirectUris: []
+    description: "Production Admin Client"
+    trusted: true
+    scopes:
+      - auth:read
+      - auth:write
+      - ledger:read
+      - ledger:write
+      - worker:read
+      - worker:write
+      - accounts:read
+      - accounts:write
+      - transaction:read
+      - transaction:write
+      - transactions:read
+      - transactions:write
+      - payments:read
+      - payments:write
+      - wallets:read
+      - wallets:write
+      - reconciliation:read
+      - reconciliation:write
+      - orchestration:read
+      - orchestration:write
+      - search:read
+      - search:write
+      - webhooks:read
+      - webhooks:write
+      - openid
+      - email
+    secrets:
+      - Ukbxu5XldEyAzvswzQ4tUgtUTGUBM8gTDHQzczzIuLk=
+
+  - id: backend-service
+    public: false
+    redirectUris: []
+    description: "Backend Service Client"
+    trusted: true
+    scopes:
+      - auth:read
+      - auth:write
+      - ledger:read
+      - ledger:write
+      - worker:read
+      - worker:write
+      - transaction:read
+      - transaction:write
+      - transactions:read
+      - transactions:write
+    secrets:
+      - Tv+aVBaxXd6ykZfwz9c06bxWNQtVM63Px7WSDVt+v6g=
+
+  - id: monitoring
+    public: false
+    redirectUris: []
+    description: "Monitoring and Reporting"
+    trusted: true
+    scopes:
+      - auth:read
+      - auth:write
+      - ledger:read
+      - ledger:write
+      - worker:read
+      - worker:write
+      - transaction:read
+      - transaction:write
+      - transactions:read
+      - transactions:write
+    secrets:
+      - pLQminb1z2v62kInjo5sn7IW83V4y/C134gzvSylM9k=
+
+  - id: console
+    public: false
+    redirectUris:
+      - http://localhost:3000/auth/callback
+    description: "Console Web UI"
+    trusted: true
+    scopes:
+      - openid
+      - email
+      - auth:read
+      - auth:write
+      - ledger:read
+      - ledger:write
+      - worker:read
+      - worker:write
+      - transaction:read
+      - transaction:write
+      - transactions:read
+      - transactions:write
+    secrets:
+      - console-secret-key-12345

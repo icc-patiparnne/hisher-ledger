@@ -1,0 +1,10 @@
+vars {
+  string $loan_id
+  account $loan = @loans:$loan_id:main
+  asset $currency = meta($loan, "currency")
+}
+
+send [$currency *] (
+  source = @loans:$loan_id:pending
+  destination = @loans:$loan_id:disbursement
+)

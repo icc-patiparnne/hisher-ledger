@@ -1,0 +1,24 @@
+vars {
+  monetary $amount
+  string $payment_reference
+  string $user_id
+  string $loan_id
+  account $loan = @loans:$loan_id:main
+  asset $currency = meta($loan, "currency")
+  monetary $remaining = overdraft($loan, $currency)
+}
+
+send $amount (
+  source = @world
+  destination = @users:$user_id:repayments
+)
+
+send $amount (
+  source = @users:$user_id:repayments
+  destination = {
+    max $remaining to $loan
+    remaining kept
+  }
+)
+
+set_tx_meta("payment_reference", $payment_reference)

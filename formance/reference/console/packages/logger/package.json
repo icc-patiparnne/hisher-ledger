@@ -1,0 +1,11 @@
+{
+  "name": "@platform/logger",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "@types/node": "^22.15.32"
+  },
+  "scripts": {
+    "typecheck": "tsc"
+  }
+}

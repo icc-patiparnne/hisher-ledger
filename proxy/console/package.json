@@ -1,0 +1,13 @@
+{
+  "name": "console-proxy",
+  "version": "1.0.0",
+  "description": "Authentication proxy for Formance Console in micro-stack mode",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "axios": "^1.6.0"
+  }
+}

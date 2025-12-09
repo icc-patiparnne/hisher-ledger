@@ -1,0 +1,20 @@
+{
+  "include": [
+    "src/components/**/*.ts",
+    "src/components/**/*.tsx",
+    "src/hooks/index.ts",
+    "src/hooks/use-hotkeys.ts",
+    "src/hooks/use-interval.ts",
+    "src/global.d.ts"
+  ],
+  "exclude": ["node_modules", "dist", "src/components/stories"],
+  "extends": "@platform/ts-config/base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@platform/ui/*": ["../../packages/ui/src/*"]
+    },
+    "types": ["node"]
+  }
+}
