@@ -133,7 +133,7 @@ services:
   console:
     # BUILD LOCAL CONSOLE WITH TYPO FIX
     build:
-      context: ./formance/reference/console
+      context: ./formance/src/console
       dockerfile: ../../../Dockerfile.console
     restart: unless-stopped
     depends_on:

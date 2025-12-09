@@ -26,23 +26,88 @@ This is your production deployment of Formance Ledger with authentication enable
    ```
 
 2. **Choose your database setup:**
-   - **Local Docker databases (default):** See below
+   - **Local Docker databases (default):** Uses `.env` configuration
    - **External PostgreSQL:** See [DATABASE_SETUP.md](./DATABASE_SETUP.md)
 
-3. **Start services:**
+3. **Configure environment for your database choice:**
    
-   **With local Docker databases:**
+   **For standard deployment (`docker-compose.yml`):**
+   ```bash
+   # Edit .env file
+   nano .env
+   
+   # For local Docker databases:
+   POSTGRES_HOST=postgres
+   AUTH_POSTGRES_HOST=auth-postgres
+   
+   # For external databases:
+   POSTGRES_HOST=host.docker.internal  # or your DB host
+   AUTH_POSTGRES_HOST=host.docker.internal
+   ```
+   
+   **For local console build (`docker-compose.local-console.yml`):**
+   ```bash
+   # For external databases - copy template and configure:
+   cp .env.external-db.example .env.external-db
+   nano .env.external-db
+   
+   # For local Docker databases - just use .env (no changes needed)
+   ```
+
+4. **Prepare databases (external PostgreSQL only):**
+   
+   If using external PostgreSQL, you only need to create the databases and users - **the schema/tables will be created automatically**:
+   
+   ```sql
+   -- Create databases
+   CREATE DATABASE ledger;
+   CREATE DATABASE auth;
+   
+   -- Create users
+   CREATE USER ledger WITH PASSWORD 'your-secure-password';
+   CREATE USER auth WITH PASSWORD 'your-secure-password';
+   
+   -- Grant privileges
+   GRANT ALL PRIVILEGES ON DATABASE ledger TO ledger;
+   GRANT ALL PRIVILEGES ON DATABASE auth TO auth;
+   
+   -- PostgreSQL 15+ requires additional grants
+   \c ledger
+   GRANT ALL ON SCHEMA public TO ledger;
+   \c auth
+   GRANT ALL ON SCHEMA public TO auth;
+   ```
+   
+   ⚠️ **Note:** Do NOT manually create tables - Formance services will automatically:
+   - Create all required tables and indexes
+   - Run database migrations on startup
+   - Update schema when upgrading to newer versions
+
+5. **Start services:**
+   
+   **Standard deployment with local Docker databases:**
    ```bash
    docker compose --profile local-db up -d
    ```
    
-   **With external databases:**
+   **Standard deployment with external databases:**
    ```bash
-   # Configure .env with external database hosts
+   # Make sure .env has external database hosts configured
    docker compose up -d
    ```
+   
+   **Local console build with local Docker databases:**
+   ```bash
+   docker compose -f docker-compose.local-console.yml --profile local-db up -d --build
+   ```
+   
+   **Local console build with external databases:**
+   ```bash
+   # Use --env-file to specify external DB configuration
+   docker compose -f docker-compose.local-console.yml --env-file .env.external-db up -d --build
+   ```
 
-4. **Get your first access token:**
+6. **Get your first access token:**
    ```bash
    # Replace with your actual credentials from auth-config.yml
    curl -X POST http://localhost/api/auth/oauth/token \
@@ -57,8 +122,8 @@ This is your production deployment of Formance Ledger with authentication enable
 #### What's What?
 
 - **formance/src/ledger/** - Official Formance Ledger Git repository (main branch)
+- **formance/src/console/** - Console v3 source (for local builds with fixes)
 - **formance/reference/auth/** - Official Formance Auth Git repository (reference only)
-- **formance/reference/console/** - Extracted console v3 files (reference only)
 - **docker-compose.yml** - Service definitions and orchestration
 - **auth-config.yml** - OAuth clients and secrets (KEEP SECURE!)
 - **Caddyfile** - API gateway routing
@@ -70,10 +135,10 @@ This is your production deployment of Formance Ledger with authentication enable
 /Users/armes/Workspace/Apps/ledger/
 ├── formance/
 │   ├── src/             # Active source code (build from this)
-│   │   └── ledger/      # Formance Ledger Git repo (can pull updates)
+│   │   ├── ledger/      # Formance Ledger Git repo (can pull updates)
+│   │   └── console/     # Console v3 Git repo (for local builds with fixes)
 │   └── reference/       # Reference code (read-only)
-│       ├── auth/        # Formance Auth Git repo
-│       └── console/     # Extracted console v3
+│       └── auth/        # Formance Auth Git repo
 ├── proxy/
 │   └── console/         # Console authentication proxy
 ├── scripts/             # Operational scripts
@@ -193,11 +258,33 @@ cat backup-auth-20231110.sql | docker compose exec -T auth-postgres psql -U auth
 
 ### 🔄 Upgrading Services
 
-#### Update Formance Ledger Source
+#### Update All Services (Recommended)
+
+Use the automated script to update ledger and pull latest images:
+
+```bash
+./scripts/update-all.sh
+```
+
+This script will:
+1. Backup databases
+2. Update ledger source code
+3. Rebuild ledger binary
+4. Pull latest auth and gateway images
+5. Restart all services
+6. Show logs for verification
+
+**Note:** Console source at `formance/src/console` must be updated manually (see below).
+
+#### Update Ledger Source Only
 
 ```bash
 cd /Users/armes/Workspace/Apps/ledger/formance/src/ledger
 git pull origin main
+
+# Or checkout specific version
+git fetch --tags
+git checkout v2.0.8
 
 # Rebuild custom binary
 mkdir -p ../../../build/fix
@@ -209,29 +296,92 @@ docker compose build ledger worker
 docker compose up -d ledger worker
 ```
 
-#### Update Auth Service
+**Note:** Database migrations run automatically on service startup - no manual intervention needed.
+
+#### Update Auth Service Version
 
 ```bash
-cd /Users/armes/Workspace/Apps/ledger/formance/reference/auth
-git pull origin main
+# 1. Check available versions:
+# https://github.com/formancehq/auth/pkgs/container/auth
 
-# If using custom auth build (optional)
-# Otherwise, just update image version in docker-compose.yml
+# 2. Update version in docker-compose files
+nano docker-compose.yml
+nano docker-compose.local-console.yml
+# Change: ghcr.io/formancehq/auth:v2.4.1 to new version
+
+# 3. Pull and restart
+docker compose pull auth
+docker compose up -d auth
+docker compose logs -f auth
 ```
 
-#### Update Docker Images
+#### Update Console Version
+
+**For standard deployment (official image):**
 
 ```bash
-cd /Users/armes/Workspace/Apps/ledger
+# 1. Check available versions:
+# https://github.com/orgs/formancehq/packages/container/package/console-v3
 
-# Update image versions in docker-compose.yml first
+# 2. Update version in docker-compose.yml
 nano docker-compose.yml
+# Change: ghcr.io/formancehq/console-v3:COMMIT_HASH to new version
 
-# Pull new images
-docker compose pull
+# 3. Pull and restart
+docker compose pull console
+docker compose up -d console
+```
 
-# Restart services
-docker compose up -d
+**For local console build (with typo fix):**
+
+```bash
+# 1. Update console source (manually)
+cd formance/src/console
+git pull origin main
+
+# 2. Check if typo fix is still needed
+grep -r "leader:write" apps/console-v3/app/
+
+# 3. If typo still exists, fix it:
+# Edit files and change 'leader:write' to 'ledger:write'
+
+# 4. Rebuild locally
+cd ../../..
+cd formance/src/console
+pnpm install
+pnpm --filter console-v3 build
+
+# 5. Rebuild Docker image
+cd ../../..
+docker compose -f docker-compose.local-console.yml build console
+docker compose -f docker-compose.local-console.yml --env-file .env.external-db up -d console
+```
+
+#### Update Gateway (Caddy)
+
+```bash
+# 1. Check available versions: https://hub.docker.com/_/caddy/tags
+
+# 2. Update version in docker-compose files
+nano docker-compose.yml
+# Change: ghcr.io/formancehq/gateway:v2.0.31 to new version
+
+# 3. Pull and restart
+docker compose pull gateway
+docker compose up -d gateway
+```
+
+#### Checking Current Versions
+
+```bash
+# Check ledger version
+curl -s http://localhost/api/ledger/_info | jq .version
+
+# Check all running versions
+docker compose ps --format "table {{.Service}}\t{{.Image}}"
+
+# Check container details
+docker compose ps
 ```
 
 ### �� Monitoring
@@ -262,6 +412,78 @@ curl http://localhost/api/ledger/_healthcheck
 # Auth health
 curl http://localhost/api/auth/_info
 ```
+
+### 🗄️ Database Migrations
+
+**Automatic Migration on Startup**
+
+Both the ledger and auth services automatically handle database migrations:
+
+```bash
+# On first startup - creates all tables
+docker compose up -d
+
+# Check logs to see migration in progress
+docker compose logs ledger | grep -i migration
+docker compose logs auth | grep -i migration
+```
+
+**Migration Process:**
+
+1. **Service starts** → Connects to database
+2. **Checks current schema version** → Compares with required version
+3. **Runs migrations if needed** → Applies changes automatically
+4. **Marks migration complete** → Records version in database
+5. **Service starts normally** → Ready to accept requests
+
+**Migration Logs Example:**
+
+```
+ledger-1  | time="2024-11-21T12:00:00Z" level=info msg="Running database migrations..."
+ledger-1  | time="2024-11-21T12:00:01Z" level=info msg="Applied migration: 001_initial_schema"
+ledger-1  | time="2024-11-21T12:00:02Z" level=info msg="Applied migration: 002_add_metadata"
+ledger-1  | time="2024-11-21T12:00:03Z" level=info msg="Database migrations complete"
+```
+
+**Checking Migration Status:**
+
+```bash
+# Check if migrations completed successfully
+docker compose logs ledger | grep "migrations complete"
+docker compose logs auth | grep "migrations complete"
+
+# View ledger database tables (local Docker DB)
+docker compose exec postgres psql -U ledger -d ledger -c "\dt"
+
+# View auth database tables (local Docker DB)
+docker compose exec auth-postgres psql -U auth -d auth -c "\dt"
+```
+
+**Upgrading to New Versions:**
+
+When you update service versions, migrations run automatically:
+
+```bash
+# 1. Backup databases first (IMPORTANT!)
+make backup
+
+# 2. Update service
+make update-ledger
+
+# 3. Services restart and run migrations automatically
+# Monitor logs to ensure migrations complete
+docker compose logs -f ledger auth
+```
+
+**Important Notes:**
+
+- ✅ **Always backup** before upgrading services
+- ✅ **Migrations are forward-only** by default (no automatic rollback)
+- ✅ **Service waits for migrations** to complete before accepting requests
+- ✅ **Multiple instances** coordinate migrations safely (won't run twice)
+- ✅ **Empty databases are fine** - First startup creates everything
+- ⚠️ **Never manually modify** migration tables (`_migrations`, `schema_migrations`)
+- ⚠️ **External DB users:** Ensure user has `CREATE TABLE` privileges
 
 ---
 
@@ -569,7 +791,7 @@ docker compose -f docker-compose.local-console.yml --profile local-db up -d --bu
 docker compose -f docker-compose.local-console.yml up -d --build
 ```
 
-**Note:** This requires the console source code to be present in `formance/reference/console`. The current reference extraction may be incomplete for a full build.
+**Note:** This requires the console source code to be present in `formance/src/console`. The current source extraction may be incomplete for a full build.
 
 ### 🛠️ Local Development Workflow
 
