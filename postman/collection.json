@@ -1,7 +1,7 @@
 {
 	"info": {
-		"name": "Formance Ledger with Auth",
-		"description": "Formance Ledger API with OAuth2 authentication. The token is automatically saved and reused.",
+		"name": "Formance Ledger with Auth (Complete V1, V2 & V3 APIs)",
+		"description": "Complete Formance Ledger V1, V2, and V3 APIs with OAuth2 authentication. The token is automatically saved and reused across all requests. V3 is a subset of V2 (excludes Schema & Bucket endpoints). All endpoints from OpenAPI specifications are included.",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"auth": {
@@ -119,7 +119,7 @@
 			]
 		},
 		{
-			"name": "Ledger API",
+			"name": "V1 - Server Info",
 			"item": [
 				{
 					"name": "Get Server Info",
@@ -185,21 +185,100 @@
 					"response": []
 				},
 				{
-					"name": "List Ledgers",
+					"name": "Get Ledger Info",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/ledger/v2",
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/_info",
 							"host": ["{{base_url}}"],
-							"path": ["api", "ledger", "v2"]
+							"path": ["api", "ledger", "{{ledger_name}}", "_info"]
 						},
-						"description": "List all ledgers"
+						"description": "Get information about a specific ledger"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V1 - Accounts",
+			"item": [
+				{
+					"name": "Count Accounts",
+					"request": {
+						"method": "HEAD",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/accounts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "accounts"]
+						},
+						"description": "Count the accounts from a ledger (returns count in Count header)"
 					},
 					"response": []
 				},
 				{
-					"name": "Create Ledger",
+					"name": "List Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/accounts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "accounts"],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "15",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "address",
+									"value": "users:.+",
+									"disabled": true
+								},
+								{
+									"key": "metadata[key]",
+									"value": "value1",
+									"disabled": true
+								},
+								{
+									"key": "balance",
+									"value": "100",
+									"disabled": true
+								},
+								{
+									"key": "cursor",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List accounts from a ledger, sorted by address in descending order"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/accounts/{{account_address}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "accounts", "{{account_address}}"]
+						},
+						"description": "Get account by its address"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Account Metadata",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -210,28 +289,106 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"bucket\": \"default\"\n}"
+							"raw": "{\n  \"key1\": \"value1\",\n  \"key2\": \"value2\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}",
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/accounts/{{account_address}}/metadata",
 							"host": ["{{base_url}}"],
-							"path": ["api", "ledger", "v2", "{{ledger_name}}"]
+							"path": ["api", "ledger", "{{ledger_name}}", "accounts", "{{account_address}}", "metadata"]
 						},
-						"description": "Create a new ledger"
+						"description": "Add metadata to an account"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V1 - Transactions",
+			"item": [
+				{
+					"name": "Count Transactions",
+					"request": {
+						"method": "HEAD",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/transactions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "transactions"],
+							"query": [
+								{
+									"key": "reference",
+									"value": "ref:001",
+									"disabled": true
+								},
+								{
+									"key": "account",
+									"value": "users:001",
+									"disabled": true
+								},
+								{
+									"key": "source",
+									"value": "world",
+									"disabled": true
+								},
+								{
+									"key": "destination",
+									"value": "users:001",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Count the transactions from a ledger (returns count in header)"
 					},
 					"response": []
 				},
 				{
-					"name": "Get Accounts",
+					"name": "List Transactions",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/accounts",
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/transactions",
 							"host": ["{{base_url}}"],
-							"path": ["api", "ledger", "v2", "{{ledger_name}}", "accounts"]
+							"path": ["api", "ledger", "{{ledger_name}}", "transactions"],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "15",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "reference",
+									"value": "ref:001",
+									"disabled": true
+								},
+								{
+									"key": "account",
+									"value": "users:001",
+									"disabled": true
+								},
+								{
+									"key": "source",
+									"value": "world",
+									"disabled": true
+								},
+								{
+									"key": "destination",
+									"value": "users:001",
+									"disabled": true
+								},
+								{
+									"key": "metadata[key]",
+									"value": "value1",
+									"disabled": true
+								}
+							]
 						},
-						"description": "Get all accounts in a ledger"
+						"description": "List transactions from a ledger, sorted by txid in descending order"
 					},
 					"response": []
 				},
@@ -247,28 +404,1207 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"postings\": [\n    {\n      \"source\": \"world\",\n      \"destination\": \"users:001\",\n      \"amount\": 100,\n      \"asset\": \"USD/2\"\n    }\n  ],\n  \"metadata\": {\n    \"description\": \"Initial deposit\"\n  }\n}"
+							"raw": "{\n  \"postings\": [\n    {\n      \"source\": \"world\",\n      \"destination\": \"users:001\",\n      \"amount\": 100,\n      \"asset\": \"USD/2\"\n    }\n  ],\n  \"metadata\": {\n    \"description\": \"Initial deposit\"\n  },\n  \"reference\": \"ref:001\"\n}"
 						},
 						"url": {
-							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/transactions",
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/transactions",
 							"host": ["{{base_url}}"],
-							"path": ["api", "ledger", "v2", "{{ledger_name}}", "transactions"]
+							"path": ["api", "ledger", "{{ledger_name}}", "transactions"],
+							"query": [
+								{
+									"key": "preview",
+									"value": "true",
+									"disabled": true
+								}
+							]
 						},
-						"description": "Create a new transaction"
+						"description": "Create a new transaction to a ledger"
 					},
 					"response": []
 				},
 				{
-					"name": "Get Transactions",
+					"name": "Get Transaction",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/transactions/{{txid}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "transactions", "{{txid}}"]
+						},
+						"description": "Get transaction from a ledger by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Transaction Metadata",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key1\": \"value1\",\n  \"key2\": \"value2\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/transactions/{{txid}}/metadata",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "transactions", "{{txid}}", "metadata"]
+						},
+						"description": "Set the metadata of a transaction by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Revert Transaction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/transactions/{{txid}}/revert",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "transactions", "{{txid}}", "revert"],
+							"query": [
+								{
+									"key": "disableChecks",
+									"value": "false",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Revert a ledger transaction by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Transaction Batch",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"transactions\": [\n    {\n      \"postings\": [\n        {\n          \"source\": \"world\",\n          \"destination\": \"users:001\",\n          \"amount\": 100,\n          \"asset\": \"USD/2\"\n        }\n      ],\n      \"reference\": \"batch:001\"\n    },\n    {\n      \"postings\": [\n        {\n          \"source\": \"world\",\n          \"destination\": \"users:002\",\n          \"amount\": 200,\n          \"asset\": \"USD/2\"\n        }\n      ],\n      \"reference\": \"batch:002\"\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/transactions/batch",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "transactions", "batch"]
+						},
+						"description": "Create a new batch of transactions to a ledger"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V1 - Balances",
+			"item": [
+				{
+					"name": "Get Balances",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/balances",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "balances"],
+							"query": [
+								{
+									"key": "address",
+									"value": "users:001",
+									"disabled": true
+								},
+								{
+									"key": "pageSize",
+									"value": "15",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "cursor",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get the balances from a ledger's account"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Aggregated Balances",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/aggregate/balances",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "aggregate", "balances"],
+							"query": [
+								{
+									"key": "address",
+									"value": "users:001",
+									"disabled": true
+								},
+								{
+									"key": "useInsertionDate",
+									"value": "false",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get the aggregated balances from selected accounts"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V1 - Mapping & Script",
+			"item": [
+				{
+					"name": "Get Mapping",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/mapping",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "mapping"]
+						},
+						"description": "Get the mapping of a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Mapping",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"contracts\": [\n    {\n      \"account\": \"users:*\",\n      \"expr\": {}\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/mapping",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "mapping"]
+						},
+						"description": "Update the mapping of a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Run Script (Deprecated)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"plain\": \"vars {\\naccount $user\\n}\\nsend [COIN 10] (\\n\\tsource = @world\\n\\tdestination = $user\\n)\\n\",\n  \"vars\": {\n    \"user\": \"users:001\"\n  },\n  \"reference\": \"script:001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/script",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "script"],
+							"query": [
+								{
+									"key": "preview",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Execute a Numscript (deprecated, merged into POST transactions)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V1 - Stats & Logs",
+			"item": [
+				{
+					"name": "Get Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "stats"]
+						},
+						"description": "Get statistics from a ledger (aggregate metrics on accounts and transactions)"
+					},
+					"response": []
+				},
+				{
+					"name": "List Logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/{{ledger_name}}/logs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "{{ledger_name}}", "logs"],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "15",
+									"disabled": true
+								},
+								{
+									"key": "after",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "startTime",
+									"value": "2023-01-01T00:00:00Z",
+									"disabled": true
+								},
+								{
+									"key": "endTime",
+									"value": "2023-12-31T23:59:59Z",
+									"disabled": true
+								},
+								{
+									"key": "cursor",
+									"value": "",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List the logs from a ledger, sorted by ID in descending order"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Server Info",
+			"item": [
+				{
+					"name": "Get Server Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/_/info",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "_", "info"]
+						},
+						"description": "Show server information (V2)"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Metrics",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/_/metrics",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "_", "metrics"]
+						},
+						"description": "Read in memory metrics"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Ledger Management",
+			"item": [
+				{
+					"name": "List Ledgers",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2?pageSize=100&includeDeleted=false",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2"],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "100"
+								},
+								{
+									"key": "cursor",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "includeDeleted",
+									"value": "false"
+								}
+							]
+						},
+						"description": "List all ledgers"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Ledger",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}"]
+						},
+						"description": "Get a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Ledger",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"bucket\": \"default\",\n  \"metadata\": {\n    \"environment\": \"production\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}"]
+						},
+						"description": "Create a new ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Ledger Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/_info",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "_info"]
+						},
+						"description": "Get information about a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Ledger Metadata",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key1\": \"value1\",\n  \"key2\": \"value2\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/metadata",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "metadata"]
+						},
+						"description": "Update ledger metadata"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Ledger Metadata Key",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/metadata/{{metadata_key}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "metadata", "{{metadata_key}}"]
+						},
+						"description": "Delete ledger metadata by key"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Schema Management",
+			"item": [
+				{
+					"name": "List Schemas",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/schema",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "schema"],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "15",
+									"disabled": true
+								},
+								{
+									"key": "cursor",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "created_at",
+									"disabled": true
+								},
+								{
+									"key": "order",
+									"value": "desc",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List all schemas for a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Insert Schema",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{$guid}}",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"contracts\": [\n    {\n      \"account\": \"users:*\",\n      \"expr\": {}\n    }\n  ]\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/schema/{{schema_version}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "schema", "{{schema_version}}"]
+						},
+						"description": "Insert a schema for a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Schema by Version",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/schema/{{schema_version}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "schema", "{{schema_version}}"]
+						},
+						"description": "Get a schema for a ledger by version"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Accounts",
+			"item": [
+				{
+					"name": "Count Accounts",
+					"request": {
+						"method": "HEAD",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/accounts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "accounts"]
+						},
+						"description": "Count the accounts from a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "List Accounts",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/accounts",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "accounts"],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "15",
+									"disabled": true
+								},
+								{
+									"key": "cursor",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "expand",
+									"value": "volumes,effectiveVolumes",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List accounts from a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/accounts/{{account_address}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "accounts", "{{account_address}}"],
+							"query": [
+								{
+									"key": "expand",
+									"value": "volumes,effectiveVolumes",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get account by its address"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Account Metadata",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key1\": \"value1\",\n  \"key2\": \"value2\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/accounts/{{account_address}}/metadata",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "accounts", "{{account_address}}", "metadata"]
+						},
+						"description": "Add metadata to an account"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Account Metadata Key",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/accounts/{{account_address}}/metadata/{{metadata_key}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "accounts", "{{account_address}}", "metadata", "{{metadata_key}}"]
+						},
+						"description": "Delete account metadata by key"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Transactions",
+			"item": [
+				{
+					"name": "List Transactions",
 					"request": {
 						"method": "GET",
 						"header": [],
 						"url": {
 							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/transactions",
 							"host": ["{{base_url}}"],
-							"path": ["api", "ledger", "v2", "{{ledger_name}}", "transactions"]
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "transactions"],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "15",
+									"disabled": true
+								},
+								{
+									"key": "cursor",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "expand",
+									"value": "volumes,effectiveVolumes",
+									"disabled": true
+								}
+							]
 						},
-						"description": "Get all transactions"
+						"description": "List transactions from a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Create Transaction",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							},
+							{
+								"key": "Idempotency-Key",
+								"value": "{{$guid}}",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"postings\": [\n    {\n      \"source\": \"world\",\n      \"destination\": \"users:001\",\n      \"amount\": 100,\n      \"asset\": \"USD/2\"\n    }\n  ],\n  \"metadata\": {\n    \"description\": \"Initial deposit\"\n  },\n  \"reference\": \"ref:001\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/transactions",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "transactions"],
+							"query": [
+								{
+									"key": "dryRun",
+									"value": "true",
+									"disabled": true
+								},
+								{
+									"key": "async",
+									"value": "false",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Create a new transaction"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Transaction",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/transactions/{{transaction_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "transactions", "{{transaction_id}}"],
+							"query": [
+								{
+									"key": "expand",
+									"value": "volumes,effectiveVolumes",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get transaction by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Add Transaction Metadata",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"key1\": \"value1\",\n  \"key2\": \"value2\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/transactions/{{transaction_id}}/metadata",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "transactions", "{{transaction_id}}", "metadata"]
+						},
+						"description": "Set the metadata of a transaction by its ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Transaction Metadata Key",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/transactions/{{transaction_id}}/metadata/{{metadata_key}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "transactions", "{{transaction_id}}", "metadata", "{{metadata_key}}"]
+						},
+						"description": "Delete transaction metadata by key"
+					},
+					"response": []
+				},
+				{
+					"name": "Revert Transaction",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/transactions/{{transaction_id}}/revert",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "transactions", "{{transaction_id}}", "revert"],
+							"query": [
+								{
+									"key": "force",
+									"value": "false",
+									"disabled": true
+								},
+								{
+									"key": "atEffectiveDate",
+									"value": "false",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Revert a ledger transaction by its ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Bulk Operations",
+			"item": [
+				{
+					"name": "Create Bulk",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"action\": \"CREATE_TRANSACTION\",\n    \"data\": {\n      \"postings\": [\n        {\n          \"source\": \"world\",\n          \"destination\": \"users:001\",\n          \"amount\": 100,\n          \"asset\": \"USD/2\"\n        }\n      ]\n    }\n  },\n  {\n    \"action\": \"ADD_METADATA\",\n    \"data\": {\n      \"targetType\": \"ACCOUNT\",\n      \"targetId\": \"users:001\",\n      \"metadata\": {\n        \"role\": \"premium\"\n      }\n    }\n  }\n]"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/_bulk?continueOnFailure=false&atomic=true",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "_bulk"],
+							"query": [
+								{
+									"key": "continueOnFailure",
+									"value": "false"
+								},
+								{
+									"key": "atomic",
+									"value": "true"
+								},
+								{
+									"key": "parallel",
+									"value": "false",
+									"disabled": true
+								},
+								{
+									"key": "schemaVersion",
+									"value": "v1.0.0",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Execute bulk operations (transactions, metadata updates, etc.)"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Balances & Volumes",
+			"item": [
+				{
+					"name": "Get Aggregated Balances",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/aggregate/balances",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "aggregate", "balances"],
+							"query": [
+								{
+									"key": "useInsertionDate",
+									"value": "false",
+									"disabled": true
+								},
+								{
+									"key": "pit",
+									"value": "2023-12-31T23:59:59Z",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get aggregated balances for selected accounts"
+					},
+					"response": []
+				},
+				{
+					"name": "List Volumes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/volumes",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "volumes"],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "15",
+									"disabled": true
+								},
+								{
+									"key": "cursor",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "startTime",
+									"value": "2023-01-01T00:00:00Z",
+									"disabled": true
+								},
+								{
+									"key": "endTime",
+									"value": "2023-12-31T23:59:59Z",
+									"disabled": true
+								},
+								{
+									"key": "groupBy",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List volumes with pagination"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Stats & Logs",
+			"item": [
+				{
+					"name": "Get Stats",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/stats",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "stats"]
+						},
+						"description": "Get statistics from a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "List Logs",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/logs",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "logs"],
+							"query": [
+								{
+									"key": "pageSize",
+									"value": "15",
+									"disabled": true
+								},
+								{
+									"key": "cursor",
+									"value": "",
+									"disabled": true
+								},
+								{
+									"key": "startTime",
+									"value": "2023-01-01T00:00:00Z",
+									"disabled": true
+								},
+								{
+									"key": "endTime",
+									"value": "2023-12-31T23:59:59Z",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List logs from a ledger"
+					},
+					"response": []
+				},
+				{
+					"name": "Import Logs",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  {\n    \"type\": \"NEW_TRANSACTION\",\n    \"data\": {}\n  }\n]"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/logs/import",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "logs", "import"]
+						},
+						"description": "Import logs"
+					},
+					"response": []
+				},
+				{
+					"name": "Export Logs",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/logs/export",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "logs", "export"]
+						},
+						"description": "Export logs"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Exporters",
+			"item": [
+				{
+					"name": "Create Exporter",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"my-exporter\",\n  \"type\": \"WEBHOOK\",\n  \"config\": {\n    \"url\": \"https://example.com/webhook\"\n  }\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/_/exporters",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "_", "exporters"]
+						},
+						"description": "Create a new exporter"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Exporter",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/_/exporters/{{exporter_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "_", "exporters", "{{exporter_id}}"]
+						},
+						"description": "Delete an exporter by ID"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Buckets",
+			"item": [
+				{
+					"name": "Delete Bucket",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/_/buckets/{{bucket_name}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "_", "buckets", "{{bucket_name}}"]
+						},
+						"description": "Delete a bucket"
+					},
+					"response": []
+				},
+				{
+					"name": "Restore Bucket",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/_/buckets/{{bucket_name}}/restore",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "_", "buckets", "{{bucket_name}}", "restore"]
+						},
+						"description": "Restore a deleted bucket"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V2 - Pipelines",
+			"item": [
+				{
+					"name": "Create Pipeline",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"my-pipeline\",\n  \"config\": {}\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/pipelines",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "pipelines"]
+						},
+						"description": "Create a new pipeline"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Pipeline",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/pipelines/{{pipeline_id}}",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "pipelines", "{{pipeline_id}}"]
+						},
+						"description": "Delete a pipeline by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Pipeline",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/pipelines/{{pipeline_id}}/reset",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "pipelines", "{{pipeline_id}}", "reset"]
+						},
+						"description": "Reset a pipeline"
+					},
+					"response": []
+				},
+				{
+					"name": "Start Pipeline",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/pipelines/{{pipeline_id}}/start",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "pipelines", "{{pipeline_id}}", "start"]
+						},
+						"description": "Start a pipeline"
+					},
+					"response": []
+				},
+				{
+					"name": "Stop Pipeline",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/v2/{{ledger_name}}/pipelines/{{pipeline_id}}/stop",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "v2", "{{ledger_name}}", "pipelines", "{{pipeline_id}}", "stop"]
+						},
+						"description": "Stop a pipeline"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "V3 - API Info",
+			"description": "V3 is a work-in-progress version based on V2. It uses the same /v2/ URL paths but with some endpoints removed (Schema and Bucket management). All V3 endpoints are already covered in the V2 section above. This section documents what's NOT available in V3.",
+			"item": [
+				{
+					"name": "📋 V3 API Notes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/api/ledger/_/info",
+							"host": ["{{base_url}}"],
+							"path": ["api", "ledger", "_", "info"]
+						},
+						"description": "# V3 API Overview\n\nV3 is work-in-progress and based on V2 with the following changes:\n\n## ✅ Available in V3 (Same as V2):\n- Server Info & Metrics\n- Ledger Management (CRUD, metadata)\n- Accounts (list, get, metadata)\n- Transactions (CRUD, metadata, revert)\n- Bulk Operations\n- Balances & Volumes\n- Stats & Logs\n- Exporters\n- Pipelines\n\n## ❌ NOT Available in V3 (Removed from V2):\n- **Schema Management** endpoints\n  - POST /v2/{ledger}/schema/{version}\n  - GET /v2/{ledger}/schema/{version}\n  - GET /v2/{ledger}/schema\n- **Bucket Management** endpoints\n  - DELETE /v2/_/buckets/{bucket}\n  - POST /v2/_/buckets/{bucket}/restore\n\n## 💡 Usage:\nAll V3 operations use the same endpoints as V2 (under /v2/ path). Simply use the V2 endpoints listed above, avoiding the schema and bucket operations.\n\n## 🔗 For full V3 functionality, refer to the V2 section of this collection."
 					},
 					"response": []
 				}
@@ -327,6 +1663,54 @@
 			"key": "ledger_name",
 			"value": "default",
 			"type": "string"
+		},
+		{
+			"key": "account_address",
+			"value": "users:001",
+			"type": "string",
+			"description": "Example account address for testing"
+		},
+		{
+			"key": "txid",
+			"value": "0",
+			"type": "string",
+			"description": "V1 - Transaction ID for testing (use actual txid from created transactions)"
+		},
+		{
+			"key": "transaction_id",
+			"value": "0",
+			"type": "string",
+			"description": "V2 - Transaction ID for testing (use actual ID from created transactions)"
+		},
+		{
+			"key": "metadata_key",
+			"value": "key1",
+			"type": "string",
+			"description": "Metadata key for testing delete operations"
+		},
+		{
+			"key": "schema_version",
+			"value": "v1.0.0",
+			"type": "string",
+			"description": "Schema version for testing"
+		},
+		{
+			"key": "exporter_id",
+			"value": "exporter-001",
+			"type": "string",
+			"description": "Exporter ID for testing"
+		},
+		{
+			"key": "bucket_name",
+			"value": "default",
+			"type": "string",
+			"description": "Bucket name for testing"
+		},
+		{
+			"key": "pipeline_id",
+			"value": "pipeline-001",
+			"type": "string",
+			"description": "Pipeline ID for testing"
 		}
 	]
 }
