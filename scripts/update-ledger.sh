@@ -1,13 +1,16 @@
 #!/bin/bash
 set -e
 
+# Get the project root directory
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
 echo "Updating Formance Ledger..."
-cd formance/src/ledger
+cd "$PROJECT_ROOT/formance/src/ledger"
 echo "Pulling latest changes..."
 git pull origin main
 
 echo "Building custom binary..."
-cd ../../..
+cd "$PROJECT_ROOT"
 ./scripts/build-ledger.sh
 
 echo "Rebuilding Docker images..."

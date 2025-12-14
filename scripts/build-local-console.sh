@@ -10,9 +10,13 @@ NC='\033[0m' # No Color
 
 echo -e "${BLUE}=== Building Formance Console Locally ===${NC}\n"
 
+# Get the project root directory
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$PROJECT_ROOT"
+
 # Check if we're in the right directory
 if [ ! -f "docker-compose.local-console.yml" ]; then
-    echo "Error: Must run from ledger directory"
+    echo "Error: docker-compose.local-console.yml not found"
     exit 1
 fi
 

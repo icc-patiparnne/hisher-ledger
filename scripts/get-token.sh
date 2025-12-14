@@ -2,6 +2,9 @@
 # Usage: ./scripts/get-token.sh [client_id] [client_secret]
 # If no arguments, uses default ledger client
 
+# Get the project root directory (though not strictly needed for this script)
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
 CLIENT_ID="${1:-console}"
 CLIENT_SECRET="${2:-console-secret-key-12345}"
 

@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+# Get the project root directory
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+
 if [ "$#" -ne 2 ]; then
   echo "Usage: ./scripts/restore-db.sh <ledger_backup.sql> <auth_backup.sql>"
   echo "Example: ./scripts/restore-db.sh backups/ledger_20241118.sql backups/auth_20241118.sql"
@@ -27,6 +30,8 @@ if [ "$CONFIRM" != "yes" ]; then
   echo "Restore cancelled"
   exit 0
 fi
+
+cd "$PROJECT_ROOT"
 
 echo "Restoring ledger database..."
 cat "$LEDGER_BACKUP" | docker compose exec -T postgres psql -U ledger ledger

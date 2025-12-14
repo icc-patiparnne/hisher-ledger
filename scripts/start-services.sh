@@ -21,7 +21,7 @@ echo "2. External PostgreSQL + Official Console"
 echo "   - Use existing PostgreSQL server"
 echo "   - Better for production"
 echo "   - Console: Official image (has leader:write typo)"
-echo "   - Command: docker compose up -d"
+echo "   - Command: docker compose --env-file .env.external-db up -d"
 echo ""
 echo "3. Local Docker Databases + Local Console Build"
 echo "   - Everything runs in Docker"
@@ -36,6 +36,10 @@ echo ""
 
 read -p "Enter choice (1-4): " choice
 
+# Get the project root directory
+PROJECT_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+cd "$PROJECT_ROOT"
+
 case $choice in
   1)
     echo -e "\n${GREEN}Starting with local Docker databases + official console...${NC}"
@@ -44,13 +48,13 @@ case $choice in
   2)
     echo -e "\n${BLUE}Starting with external databases + official console${NC}"
     echo "Make sure you have:"
-    echo "  1. Updated .env with external database host/credentials"
+    echo "  1. Updated .env.external-db with external database host/credentials"
     echo "  2. Created databases: 'ledger' and 'auth'"
     echo "  3. Created users with proper permissions"
     echo ""
     read -p "Ready to start? (y/n): " confirm
     if [ "$confirm" = "y" ] || [ "$confirm" = "Y" ]; then
-      docker compose up -d
+      docker compose --env-file .env.external-db up -d
     else
       echo "Cancelled. See DATABASE_SETUP.md for setup instructions."
       exit 0
