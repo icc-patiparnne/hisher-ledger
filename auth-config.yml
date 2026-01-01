@@ -111,6 +111,8 @@ clients:
       - auth:write
       - ledger:read
       - ledger:write
+      - leader:read
+      - leader:write
       - worker:read
       - worker:write
       - accounts:read

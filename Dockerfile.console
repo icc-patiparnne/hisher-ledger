@@ -7,22 +7,23 @@ ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
 WORKDIR /app
 
-# Copy source for building
+# Copy source for building (context is ./formance/src/console)
 FROM base AS builder
 COPY . .
 
-# Production stage - use official console as base since pnpm workspace is complex
-FROM ghcr.io/formancehq/console-v3:f76467637c7c594a35a39690b5e26f69936b2dcf AS official
+# Install dependencies and build
+RUN pnpm install --frozen-lockfile
+WORKDIR /app/apps/console-v3
+RUN pnpm run build
 
-# Final stage - replace build with our fixed version
-FROM official
+# Final stage - use official console as base for runtime
+FROM ghcr.io/formancehq/console-v3:f76467637c7c594a35a39690b5e26f69936b2dcf
 
 # Copy our fixed build over the official one
-# Official image has WORKDIR /app/apps/console-v3/ with build folder there
 COPY --from=builder /app/apps/console-v3/build /app/apps/console-v3/build
 
 # The official image already has:
 # - All dependencies properly installed  
 # - WORKDIR /app/apps/console-v3/
 # - CMD ["sh", "-c", "pnpm run start:prod"]
-# We just replace the build folder with our typo-fixed version
+# We just replace the build folder with our fixed version

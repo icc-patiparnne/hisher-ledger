@@ -64,7 +64,8 @@ app.get('/versions', (req, res) => {
 // Middleware to proxy all requests
 app.use(express.json());
 app.use(async (req, res) => {
-  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  const startTime = Date.now();
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - START`);
   
   try {
     const token = await getAccessToken();
@@ -72,9 +73,12 @@ app.use(async (req, res) => {
     // Forward request to API with authentication
     // Remove /api prefix if present since API_URL already includes it
     const apiPath = req.path.startsWith('/api') ? req.path.substring(4) : req.path;
+    const targetUrl = `${API_URL}${apiPath}`;
+    console.log(`[${new Date().toISOString()}] Forwarding to: ${targetUrl}`);
+    
     const response = await axios({
       method: req.method,
-      url: `${API_URL}${apiPath}`,
+      url: targetUrl,
       headers: {
         ...req.headers,
         'Authorization': `Bearer ${token}`,
@@ -84,16 +88,24 @@ app.use(async (req, res) => {
       data: req.method !== 'GET' && req.method !== 'HEAD' ? req.body : undefined,
       params: req.query,
       validateStatus: () => true, // Don't throw on any status code
+      timeout: 30000, // 30 second timeout
     });
+
+    const duration = Date.now() - startTime;
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} -> ${response.status} (${duration}ms)`);
 
     // Forward response back to client
     res.status(response.status);
     Object.keys(response.headers).forEach(key => {
-      res.set(key, response.headers[key]);
+      if (key.toLowerCase() !== 'transfer-encoding') {
+        res.set(key, response.headers[key]);
+      }
     });
     res.send(response.data);
   } catch (error) {
-    console.error('Proxy error:', error.message);
+    const duration = Date.now() - startTime;
+    console.error(`[${new Date().toISOString()}] Proxy error (${duration}ms):`, error.message);
+    console.error('Error details:', error.code, error.response?.status);
     res.status(500).json({
       error: 'Proxy error',
       message: error.message

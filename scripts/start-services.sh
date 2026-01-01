@@ -15,7 +15,7 @@ echo "1. Local Docker Databases + Official Console (Default)"
 echo "   - Everything runs in Docker"
 echo "   - Easy setup, isolated environment"
 echo "   - Console: Official image (has leader:write typo)"
-echo "   - Command: docker compose --profile local-db up -d"
+echo "   - Command: docker compose -f docker-compose.yml -f docker-compose.local-db.yml --profile local-db up -d"
 echo ""
 echo "2. External PostgreSQL + Official Console"
 echo "   - Use existing PostgreSQL server"
@@ -26,7 +26,7 @@ echo ""
 echo "3. Local Docker Databases + Local Console Build"
 echo "   - Everything runs in Docker"
 echo "   - Console: Built from formance/src/console (typo fixed)"
-echo "   - Command: docker compose -f docker-compose.local-console.yml --profile local-db up -d --build"
+echo "   - Command: docker compose -f docker-compose.local-console.yml -f docker-compose.local-db.yml --profile local-db up -d --build"
 echo ""
 echo "4. External PostgreSQL + Local Console Build"
 echo "   - Use existing PostgreSQL server"
@@ -43,7 +43,7 @@ cd "$PROJECT_ROOT"
 case $choice in
   1)
     echo -e "\n${GREEN}Starting with local Docker databases + official console...${NC}"
-    docker compose --profile local-db up -d
+    docker compose -f docker-compose.yml -f docker-compose.local-db.yml --profile local-db up -d
     ;;
   2)
     echo -e "\n${BLUE}Starting with external databases + official console${NC}"
@@ -63,7 +63,7 @@ case $choice in
   3)
     echo -e "\n${GREEN}Starting with local Docker databases + local console build...${NC}"
     echo -e "${YELLOW}Note: This will build console from formance/src/console${NC}"
-    docker compose -f docker-compose.local-console.yml --profile local-db up -d --build
+    docker compose -f docker-compose.local-console.yml -f docker-compose.local-db.yml --profile local-db up -d --build
     ;;
   4)
     echo -e "\n${BLUE}Starting with external databases + local console build${NC}"
@@ -97,3 +97,33 @@ echo "  - Console UI: http://localhost:3000"
 echo "  - API Gateway: http://localhost/api"
 echo "  - Ledger API: http://localhost/api/ledger"
 echo "  - Auth API: http://localhost/api/auth"
+echo ""
+
+# Ask about starting the ledger watcher
+echo -e "${YELLOW}=== Ledger Creation Watcher ===${NC}"
+echo "When creating new ledgers via the console, the services may need to restart"
+echo "to properly detect the new PostgreSQL schema."
+echo ""
+echo "Options:"
+echo "  1. Start watcher in background (auto-restart after ledger creation)"
+echo "  2. Skip watcher (manually run './scripts/ledger-proxy.sh restart' after creating ledgers)"
+echo ""
+read -p "Start the ledger watcher? (1/2) [2]: " watcher_choice
+
+case ${watcher_choice:-2} in
+  1)
+    echo -e "\n${GREEN}Starting ledger creation watcher in background...${NC}"
+    # Start the watcher in background and save PID
+    nohup "$PROJECT_ROOT/scripts/ledger-proxy.sh" watch > "$PROJECT_ROOT/logs/ledger-watcher.log" 2>&1 &
+    WATCHER_PID=$!
+    echo $WATCHER_PID > "$PROJECT_ROOT/.ledger-watcher.pid"
+    echo -e "${GREEN}Watcher started (PID: $WATCHER_PID)${NC}"
+    echo "Log file: logs/ledger-watcher.log"
+    echo "To stop: kill \$(cat .ledger-watcher.pid)"
+    ;;
+  *)
+    echo -e "\n${YELLOW}Watcher not started.${NC}"
+    echo "After creating a new ledger via console, run:"
+    echo "  ./scripts/ledger-proxy.sh restart"
+    ;;
+esac

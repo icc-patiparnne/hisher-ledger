@@ -45,7 +45,7 @@ services:
       - ${AUTH_POSTGRES_DATA:-auth-postgres}:/data/postgres
 
   auth:
-    image: ghcr.io/formancehq/auth:v2.4.1
+    image: ghcr.io/formancehq/auth:v2.0.31
     restart: unless-stopped
     environment:
       DEBUG: "${DEBUG:-false}"
@@ -102,7 +102,7 @@ services:
       AUTH_ISSUER: http://auth:8080
 
   gateway:
-    image: ghcr.io/formancehq/gateway:v2.0.31
+    image: ghcr.io/formancehq/gateway:v2.2.0
     restart: unless-stopped
     depends_on:
       - ledger
@@ -110,6 +110,8 @@ services:
     ports:
       - "80:80"
       - "443:443"
+    environment:
+      DEBUG: "${DEBUG:-false}"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
 

@@ -136,6 +136,18 @@ export const getFormanceSDK = async (
         true
       )) as any;
 
+      // Handle undefined response (network errors, timeouts, etc.)
+      if (!axiosResponse) {
+        return new Response(
+          JSON.stringify({ error: 'Network error or timeout' }),
+          {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: new Headers({ 'Content-Type': 'application/json' }),
+          }
+        );
+      }
+
       return new Response(
         JSON.stringify(
           axiosResponse.status !== 204 ? axiosResponse.data : { data: '' }
