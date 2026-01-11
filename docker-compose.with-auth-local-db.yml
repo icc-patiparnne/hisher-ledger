@@ -1,17 +1,15 @@
-# Health check dependencies for local Docker databases
+# Docker Compose configuration for local PostgreSQL databases
 # Use with: docker compose -f docker-compose.yml -f docker-compose.local-db.yml --profile local-db up -d
 
-name: ledger
-
 services:
+  auth:
+    depends_on:
+      auth-postgres:
+        condition: service_healthy
+
   ledger:
     depends_on:
       postgres:
         condition: service_healthy
-
-  worker:
-    depends_on:
-      postgres:
-        condition: service_healthy
-      ledger:
+      auth:
         condition: service_started

@@ -1,0 +1,48 @@
+(cors) {
+	header {
+		Access-Control-Allow-Methods "GET,OPTIONS,PUT,POST,DELETE,HEAD,PATCH"
+		Access-Control-Allow-Headers content-type
+		Access-Control-Max-Age 100
+		Access-Control-Allow-Origin *
+	}
+}
+
+(handle_path_route_without_auth) {
+	# handle_path automatically strips the prefix from the request path
+	handle_path {args.0}* {
+		reverse_proxy {args.1} {
+			# Pass forwarding headers so upstream knows the original URL
+			header_up X-Forwarded-Proto {scheme}
+			header_up X-Forwarded-Host {host}
+			header_up X-Forwarded-Prefix {args.0}
+		}
+		import cors
+	}
+}
+
+{
+	order versions after metrics
+
+	# Remove this in production or set appropriate log level
+	# debug
+}
+
+:80 {
+	import handle_path_route_without_auth "/api/ledger" "ledger:3068"
+	import handle_path_route_without_auth "/api/auth" "auth:8080"
+
+	handle /versions {
+		versions {
+			region "production"
+			env "production"
+			endpoints {
+				ledger /api/ledger/_info /api/ledger/_healthcheck
+				auth /api/auth/_info /api/auth/_healthcheck
+			}
+		}
+	}
+
+	handle {
+		respond "Bad Gateway" 502
+	}
+}
